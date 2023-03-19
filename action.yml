@@ -1,0 +1,42 @@
+name: 'Docker Image Tag'
+description: 'Outputs a nice Docker image tag for GitHub container registry'
+
+inputs:
+  product-name:
+    description: 'Your product name'
+    required: true
+  service-suffix:
+    description: 'Specifies suffix with service name'
+    required: false
+  input-version:
+    description: 'Passes given version to tag instead of Git tag'
+    required: false
+
+outputs:
+  image-tag:
+    description: 'Ready-to-use image tag'
+    value: ${{ steps.generate-tag.outputs.image-tag }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Generate image tag for ghcr.io
+      id: generate-tag
+      shell: bash
+      run: |
+        git_tag_last="$(git describe --tags --abbrev=0)"
+        image_tag="$( \
+          ${{ github.action_path }}/generate-tag.sh \
+            "${{ inputs.product-name }}" \
+            "${{ inputs.service-suffix }}" \
+            "${{ inputs.input-version }}" \
+            "${{ github.repository }}" \
+            "${{ github.ref_type }}" \
+            "${{ github.ref_name }}" \
+            "${{ github.sha }}" \
+            "${git_tag_last}" \
+        )"
+        echo "image-tag=${image_tag}" >> $GITHUB_OUTPUT
+    - name: Update GITHUB_PATH
+      shell: bash
+      run: echo "${{ github.action_path }}" >> $GITHUB_PATH
