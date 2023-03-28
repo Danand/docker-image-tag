@@ -4,22 +4,13 @@
 
 set -e
 
-product_name="$1"
-service_suffix="$2"
-input_version="$3"
-repository="$4"
-ref_type="$5"
-ref_name="$6"
-sha="$7"
-git_tag_last="$8"
+prefix="$1"
+input_version="$2"
+ref_type="$3"
+ref_name="$4"
+sha="$5"
 
-tag="ghcr.io/${repository}/${product_name}"
-
-if [ ! -z "${service_suffix}" ]; then
-  tag+="-${service_suffix}"
-fi
-
-tag="$(echo "${tag}" | tr "[:upper:]" "[:lower:]")"
+tag="${prefix}"
 
 tag+=":"
 
@@ -29,8 +20,11 @@ elif [ "${ref_type}" == "tag" ]; then
   tag+="${ref_name}"
 else
   sha_short="$(echo "${sha}" | head -q -c 8)"
-  if [ ! -z "${git_tag_last}" ]; then
-    tag+="${git_tag_last}-${sha_short}"
+
+  is_in_repo="$(git rev-parse --is-inside-work-tree 2>/dev/null || echo "false")"
+
+  if $is_in_repo; then
+    tag+="$(git describe --tags --abbrev=0)-${sha_short}"
   else
     tag+="${sha_short}"
   fi

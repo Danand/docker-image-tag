@@ -1,0 +1,45 @@
+name: Test Image Tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - 'v*-*.*'
+
+env:
+  PRODUCT_NAME: docker-image-tag
+  IMAGE_VERSION: 1.0.0
+
+jobs:
+  run-test:
+    runs-on: ['self-hosted','linux','bash']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Use action
+        id: docker-image-tag
+        uses: Danand/docker-image-tag@v2-rc.0
+        with:
+          product-name: ${{ env.PRODUCT_NAME }}
+          service-suffix: test
+          input-version: ${{ env.IMAGE_VERSION }}
+      - name: Assert
+        shell: bash
+        run: |
+          function assert() {
+            if [ "$1" != "$2" ]; then
+              &>2 echo -en "expected:\t$1\nactual:\t$2\n\n"
+              exit 1
+            fi
+          }
+
+          expected="ghcr.io/Danand/docker-image-tag/docker-image-tag-test"
+          actual="${{ steps.docker-image-tag.outputs.prefix }}"
+
+          assert "${expected}" "${actual}"
+
+          expected="ghcr.io/Danand/docker-image-tag/docker-image-tag-test:1.0.0"
+          actual="${{ steps.docker-image-tag.outputs.image-tag }}"
+
+          assert "${expected}" "${actual}"
+

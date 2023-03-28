@@ -24,18 +24,24 @@ runs:
       id: generate-tag
       shell: bash
       run: |
-        git_tag_last="$(git describe --tags --abbrev=0)"
-        image_tag="$( \
+        prefix="$( \
           ${{ github.action_path }}/generate-tag.sh \
             "${{ inputs.product-name }}" \
             "${{ inputs.service-suffix }}" \
-            "${{ inputs.input-version }}" \
             "${{ github.repository }}" \
+        )"
+
+        echo "prefix=${prefix}" >> $GITHUB_OUTPUT
+
+        image_tag="$( \
+          ${{ github.action_path }}/generate-tag.sh \
+            "${prefix}" \
+            "${{ inputs.input-version }}" \
             "${{ github.ref_type }}" \
             "${{ github.ref_name }}" \
-            "${{ github.sha }}" \
-            "${git_tag_last}" \
+            "${{ github.sha }}"
         )"
+
         echo "image-tag=${image_tag}" >> $GITHUB_OUTPUT
     - name: Update GITHUB_PATH
       shell: bash
