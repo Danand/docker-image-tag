@@ -15,3 +15,7 @@ if [ ! -z "${service_suffix}" ]; then
 fi
 
 tag="$(echo "${tag}" | tr "[:upper:]" "[:lower:]")"
+
+echo "${tag}"
+
+exit 0
