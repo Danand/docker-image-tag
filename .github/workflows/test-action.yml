@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Use action
         id: docker-image-tag
-        uses: Danand/docker-image-tag@v2-rc.4
+        uses: Danand/docker-image-tag@v2-rc.5
         with:
           product-name: ${{ env.PRODUCT_NAME }}
           service-suffix: test
@@ -28,7 +28,7 @@ jobs:
         run: |
           function assert() {
             if [ "$1" != "$2" ]; then
-              echo -en "expected:\t$1\nactual:\t$2\n\n"
+              echo -en "::error:: expected:\t$1\nactual:\t$2\n\n"
               exit 1
             fi
           }

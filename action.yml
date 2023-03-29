@@ -26,20 +26,20 @@ runs:
       run: |
         chmod +x ${{ github.action_path }}/generate-prefix.sh
 
-        prefix="$( \
+        image_prefix="$( \
           ${{ github.action_path }}/generate-prefix.sh \
             "${{ inputs.product-name }}" \
             "${{ inputs.service-suffix }}" \
             "${{ github.repository }}" \
         )"
 
-        echo "prefix=${prefix}" >> $GITHUB_OUTPUT
+        echo "prefix=${image_prefix}" >> $GITHUB_OUTPUT
 
         chmod +x ${{ github.action_path }}/generate-tag.sh
 
         image_tag="$( \
           ${{ github.action_path }}/generate-tag.sh \
-            "${prefix}" \
+            "${image_prefix}" \
             "${{ inputs.input-version }}" \
             "${{ github.ref_type }}" \
             "${{ github.ref_name }}" \
