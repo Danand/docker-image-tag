@@ -24,6 +24,8 @@ runs:
       id: generate-tag
       shell: bash
       run: |
+        chmod +x ${{ github.action_path }}/generate-prefix.sh
+
         prefix="$( \
           ${{ github.action_path }}/generate-prefix.sh \
             "${{ inputs.product-name }}" \
@@ -32,6 +34,8 @@ runs:
         )"
 
         echo "prefix=${prefix}" >> $GITHUB_OUTPUT
+
+        chmod +x ${{ github.action_path }}/generate-tag.sh
 
         image_tag="$( \
           ${{ github.action_path }}/generate-tag.sh \
