@@ -13,6 +13,9 @@ inputs:
     required: false
 
 outputs:
+  prefix:
+    description: 'Ready-to-use image tag prefix (without version)'
+    value: ${{ steps.generate-tag.outputs.prefix }}
   image-tag:
     description: 'Ready-to-use image tag'
     value: ${{ steps.generate-tag.outputs.image-tag }}
@@ -33,11 +36,7 @@ runs:
             "${{ github.repository }}" \
         )"
 
-        echo "::debug::image_prefix=${image_prefix}"
-
         echo "prefix=${image_prefix}" >> $GITHUB_OUTPUT
-
-        echo "::debug::GITHUB_OUTPUT modified: $GITHUB_OUTPUT"
 
         chmod +x ${{ github.action_path }}/generate-tag.sh
 
@@ -50,11 +49,7 @@ runs:
             "${{ github.sha }}"
         )"
 
-        echo "::debug::image_tag=${image_tag}"
-
         echo "image-tag=${image_tag}" >> $GITHUB_OUTPUT
-
-        echo "::debug::GITHUB_OUTPUT modified: $GITHUB_OUTPUT"
 
     - name: Update GITHUB_PATH
       shell: bash
